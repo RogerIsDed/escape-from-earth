@@ -143,6 +143,20 @@ async function solveChallenge5() {
   return largestMoon;
 }
 
+
+
+async function solveChallenge6() {
+  console.log("🛰 Solving Challenge 6 (Pluto Classification)...");
+
+  const pluto = await getJSON(`${SOLAR_BASE}/bodies/pluto`, true);
+
+  const classification = pluto.bodyType.toLowerCase();
+
+  console.log(`Answer 6: ${classification}`);
+
+  return classification;
+}
+
 async function runMission() {
   try {
     console.log("🚀 Starting Mission...");
@@ -179,8 +193,14 @@ async function runMission() {
       player: PLAYER,
     });
 
+    const answer6 = await solveChallenge6();
+    const result6 = await postJSON(`${RIS_BASE}/answer`, {
+      answer: answer6,
+      player: PLAYER,
+    });
+
     console.log("\n🛰 RIS Response:");
-    console.log(result5);
+    console.log(result6);
   } catch (err) {
     console.error("❌ Mission failed:", err.message);
   }
