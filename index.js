@@ -107,7 +107,6 @@ async function solveChallenge3() {
 }
 
 
-
 async function solveChallenge4() {
   console.log("🌙 Solving Challenge 4 (Jupiter's Moons)...");
 
@@ -118,6 +117,30 @@ async function solveChallenge4() {
   console.log(`Answer 4: ${moonCount}`);
 
   return moonCount;
+}
+
+
+
+async function solveChallenge5() {
+  console.log("🌙 Solving Challenge 5 (Largest Moon of Jupiter)...");
+
+  const jupiter = await getJSON(`${SOLAR_BASE}/bodies/jupiter`, true);
+
+  let largestMoon = null;
+  let largestRadius = 0;
+
+  for (const moon of jupiter.moons) {
+    const moonData = await getJSON(moon.rel, true);
+
+    if (moonData.meanRadius && moonData.meanRadius > largestRadius) {
+      largestRadius = moonData.meanRadius;
+      largestMoon = moonData.englishName.toLowerCase();
+    }
+  }
+
+  console.log(`Answer 5: ${largestMoon}`);
+
+  return largestMoon;
 }
 
 async function runMission() {
@@ -150,8 +173,14 @@ async function runMission() {
       player: PLAYER,
     });
 
+    const answer5 = await solveChallenge5();
+    const result5 = await postJSON(`${RIS_BASE}/answer`, {
+      answer: answer5,
+      player: PLAYER,
+    });
+
     console.log("\n🛰 RIS Response:");
-    console.log(result4);
+    console.log(result5);
   } catch (err) {
     console.error("❌ Mission failed:", err.message);
   }
