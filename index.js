@@ -36,6 +36,7 @@ async function postJSON(url, data) {
   return response.json();
 }
 
+
 async function solveChallenge1() {
   console.log("🌞 Solving Challenge 1...");
 
@@ -43,9 +44,9 @@ async function solveChallenge1() {
   const difference = sun.equaRadius - sun.meanRadius;
 
   console.log(`Answer 1: ${difference}`);
-
   return difference;
 }
+
 
 async function solveChallenge2() {
   console.log("🌍 Solving Challenge 2...");
@@ -73,33 +74,65 @@ async function solveChallenge2() {
   }
 
   console.log(`Answer 2: ${closestPlanet}`);
-
   return closestPlanet;
 }
+
+
+async function solveChallenge3() {
+  console.log("🪐 Solving Challenge 3 (Shortest Day)...");
+
+  const planetsData = await getJSON(
+    `${SOLAR_BASE}/bodies?filter[]=isPlanet,eq,true`,
+    true
+  );
+
+  let fastestPlanet = null;
+  let shortestDay = Infinity;
+
+  for (const planet of planetsData.bodies) {
+    if (!planet.sideralRotation) continue;
+
+    const rotation = Math.abs(planet.sideralRotation);
+
+    console.log(`${planet.englishName} day length: ${rotation} hours`);
+
+    if (rotation < shortestDay) {
+      shortestDay = rotation;
+      fastestPlanet = planet.englishName.toLowerCase();
+    }
+  }
+
+  console.log(`Answer 3: ${fastestPlanet}`);
+  return fastestPlanet;
+}
+
 
 async function runMission() {
   try {
     console.log("🚀 Starting Mission...");
 
-    
     await getJSON(`${RIS_BASE}/start?player=${PLAYER}`);
 
-    
     const answer1 = await solveChallenge1();
     await postJSON(`${RIS_BASE}/answer`, {
       answer: answer1,
       player: PLAYER,
     });
 
-    
     const answer2 = await solveChallenge2();
-    const result2 = await postJSON(`${RIS_BASE}/answer`, {
+    await postJSON(`${RIS_BASE}/answer`, {
       answer: answer2,
       player: PLAYER,
     });
 
+    const answer3 = await solveChallenge3();
+    const result3 = await postJSON(`${RIS_BASE}/answer`, {
+      answer: answer3,
+      player: PLAYER,
+    });
+
     console.log("\n🛰 RIS Response:");
-    console.log(result2);
+    console.log(result3);
   } catch (err) {
     console.error("❌ Mission failed:", err.message);
   }
