@@ -1,16 +1,22 @@
-
-const PLAYER = "Oliversto@uia.no"; 
+const PLAYER = "Oliversto@uia.no";
 
 const RIS_BASE = "https://spacescavanger.onrender.com";
 const SOLAR_BASE = "https://api.le-systeme-solaire.net/rest";
 
+const SOLAR_API_KEY = "9e494129-addc-42f8-b76e-8eff6ec06ec2";
 
+async function getJSON(url, useSolarAuth = false) {
+  const headers = {};
 
-async function getJSON(url) {
-  const response = await fetch(url);
+  if (useSolarAuth) {
+    headers["Authorization"] = `Bearer ${SOLAR_API_KEY}`;
+  }
+
+  const response = await fetch(url, { headers });
 
   if (!response.ok) {
-    throw new Error(`GET failed: ${response.status} ${response.statusText}`);
+    const text = await response.text();
+    throw new Error(`GET failed: ${response.status} ${text}`);
   }
 
   return response.json();
@@ -32,7 +38,6 @@ async function postJSON(url, data) {
   return response.json();
 }
 
-
 async function startMission() {
   try {
     console.log("🚀 Contacting Resistance Infiltration System...");
@@ -45,8 +50,10 @@ async function startMission() {
 
     console.log("\n🌞 Accessing Solar System Database...");
 
-    // Fetch sun data
-    const sunData = await getJSON(`${SOLAR_BASE}/bodies/sun`);
+    const sunData = await getJSON(
+      `${SOLAR_BASE}/bodies/sun`,
+      true
+    );
 
     const equatorialRadius = sunData.equaRadius;
     const meanRadius = sunData.meanRadius;
