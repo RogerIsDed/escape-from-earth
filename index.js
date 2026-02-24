@@ -107,6 +107,19 @@ async function solveChallenge3() {
 }
 
 
+
+async function solveChallenge4() {
+  console.log("🌙 Solving Challenge 4 (Jupiter's Moons)...");
+
+  const jupiter = await getJSON(`${SOLAR_BASE}/bodies/jupiter`, true);
+
+  const moonCount = jupiter.moons ? jupiter.moons.length : 0;
+
+  console.log(`Answer 4: ${moonCount}`);
+
+  return moonCount;
+}
+
 async function runMission() {
   try {
     console.log("🚀 Starting Mission...");
@@ -131,8 +144,14 @@ async function runMission() {
       player: PLAYER,
     });
 
+    const answer4 = await solveChallenge4();
+    const result4 = await postJSON(`${RIS_BASE}/answer`, {
+      answer: answer4,
+      player: PLAYER,
+    });
+
     console.log("\n🛰 RIS Response:");
-    console.log(result3);
+    console.log(result4);
   } catch (err) {
     console.error("❌ Mission failed:", err.message);
   }
